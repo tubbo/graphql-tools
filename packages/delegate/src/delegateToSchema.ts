@@ -21,7 +21,6 @@ import {
   Executor,
   ExecutionParams,
   Maybe,
-  assertSome,
   AggregateError,
   isAsyncIterable,
   getDefinedRootType,
@@ -140,7 +139,9 @@ function getDelegationContext<TContext>({
 
   if (fieldName == null) {
     operationDefinition = getOperationAST(request.document, request.operationName);
-    assertSome(operationDefinition, 'Could not identify the main operation of the document.');
+    if (operationDefinition == null) {
+      throw new Error('Cannot infer main operation from the provided document.');
+    }
     targetFieldName = (operationDefinition?.selectionSet.selections[0] as unknown as FieldDefinitionNode).name.value;
   } else {
     targetFieldName = fieldName;
