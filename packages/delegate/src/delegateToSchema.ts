@@ -122,7 +122,7 @@ const emptyObject = {};
 function getDelegationContext<TContext>({
   request,
   schema,
-  operation,
+  operation = request.operationType,
   fieldName,
   returnType,
   args = {},
@@ -135,15 +135,8 @@ function getDelegationContext<TContext>({
   operationName,
 }: IDelegateRequestOptions<TContext>): DelegationContext<TContext> {
   let operationDefinition: Maybe<OperationDefinitionNode>;
-  let targetOperation: Maybe<OperationTypeNode>;
   let targetFieldName: string;
   let targetOperationName: string | undefined;
-
-  if (operation == null) {
-    targetOperation = request.operationType;
-  } else {
-    targetOperation = operation;
-  }
 
   if (fieldName == null) {
     operationDefinition = getOperationAST(request.document, request.operationName);
@@ -174,15 +167,14 @@ function getDelegationContext<TContext>({
       subschema: schema,
       subschemaConfig: subschemaOrSubschemaConfig,
       targetSchema,
-      operation: targetOperation,
+      operation,
       operationName: targetOperationName,
       fieldName: targetFieldName,
       args,
       context,
       info,
       rootValue: rootValue ?? emptyObject,
-      returnType:
-        returnType ?? info?.returnType ?? getDelegationReturnType(targetSchema, targetOperation, targetFieldName),
+      returnType: returnType ?? info?.returnType ?? getDelegationReturnType(targetSchema, operation, targetFieldName),
       transforms:
         subschemaOrSubschemaConfig.transforms != null
           ? subschemaOrSubschemaConfig.transforms.concat(transforms)
@@ -198,16 +190,14 @@ function getDelegationContext<TContext>({
     subschema: schema,
     subschemaConfig: undefined,
     targetSchema: subschemaOrSubschemaConfig,
-    operation: targetOperation,
+    operation,
     fieldName: targetFieldName,
     args,
     context,
     info,
     rootValue: rootValue,
     returnType:
-      returnType ??
-      info?.returnType ??
-      getDelegationReturnType(subschemaOrSubschemaConfig, targetOperation, targetFieldName),
+      returnType ?? info?.returnType ?? getDelegationReturnType(subschemaOrSubschemaConfig, operation, targetFieldName),
     transforms,
     transformedSchema: transformedSchema ?? subschemaOrSubschemaConfig,
     skipTypeMerging,

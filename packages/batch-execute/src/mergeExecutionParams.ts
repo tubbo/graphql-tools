@@ -15,10 +15,9 @@ import {
   ASTKindToNode,
   InlineFragmentNode,
   FieldNode,
-  OperationTypeNode,
 } from 'graphql';
 
-import { ExecutionParams, Maybe } from '@graphql-tools/utils';
+import { ExecutionParams } from '@graphql-tools/utils';
 
 import { createPrefix } from './prefix';
 
@@ -66,15 +65,12 @@ export function mergeExecutionParams(
   const mergedFragmentDefinitions: Array<FragmentDefinitionNode> = [];
   let mergedExtensions: Record<string, any> = Object.create(null);
 
-  let operation: Maybe<OperationTypeNode>;
-
   for (const index in execs) {
     const executionParams = execs[index];
     const prefixedExecutionParams = prefixExecutionParams(createPrefix(index), executionParams);
 
     for (const def of prefixedExecutionParams.document.definitions) {
       if (isOperationDefinition(def)) {
-        operation = def.operation;
         mergedSelections.push(...def.selectionSet.selections);
         if (def.variableDefinitions) {
           mergedVariableDefinitions.push(...def.variableDefinitions);
@@ -88,13 +84,9 @@ export function mergeExecutionParams(
     mergedExtensions = extensionsReducer(mergedExtensions, executionParams);
   }
 
-  if (operation == null) {
-    throw new Error('Could not identify operation type. Did the document only include fragment definitions?');
-  }
-
   const mergedOperationDefinition: OperationDefinitionNode = {
     kind: Kind.OPERATION_DEFINITION,
-    operation,
+    operation: execs[0].operationType,
     variableDefinitions: mergedVariableDefinitions,
     selectionSet: {
       kind: Kind.SELECTION_SET,
@@ -110,7 +102,7 @@ export function mergeExecutionParams(
     variables: mergedVariables,
     extensions: mergedExtensions,
     context: execs[0].context,
-    operationType: operation,
+    operationType: execs[0].operationType,
   };
 }
 

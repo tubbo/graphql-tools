@@ -49,6 +49,7 @@ describe('requests', () => {
         }
       `),
       variables: {},
+      operationType: 'query',
       operationName: 'test'
     });
 
