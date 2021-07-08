@@ -1,4 +1,4 @@
-import { DocumentNode, GraphQLResolveInfo } from 'graphql';
+import { DocumentNode, OperationTypeNode } from 'graphql';
 import { ExecutionResult } from './Interfaces';
 
 type MaybePromise<T> = Promise<T> | T;
@@ -11,10 +11,10 @@ export interface ExecutionParams<
   TExtensions = Record<string, any>
 > {
   document: DocumentNode;
+  operationType: OperationTypeNode;
   variables?: TArgs;
   extensions?: TExtensions;
   context?: TContext;
-  info?: GraphQLResolveInfo;
   rootValue?: TRootValue;
   operationName?: string;
 }

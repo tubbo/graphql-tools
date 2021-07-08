@@ -173,6 +173,7 @@ export function createRequest({
     document,
     variables: newVariables,
     operationName: targetOperationName,
+    operationType: targetOperation,
   };
 }
 

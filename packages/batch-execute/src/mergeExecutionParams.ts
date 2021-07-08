@@ -110,7 +110,7 @@ export function mergeExecutionParams(
     variables: mergedVariables,
     extensions: mergedExtensions,
     context: execs[0].context,
-    info: execs[0].info,
+    operationType: operation,
   };
 }
 
@@ -137,6 +137,7 @@ function prefixExecutionParams(prefix: string, executionParams: ExecutionParams)
   return {
     document,
     variables: prefixedVariables,
+    operationType: executionParams.operationType,
   };
 }
 

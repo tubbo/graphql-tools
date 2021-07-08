@@ -48,6 +48,7 @@ import {
   GraphQLType,
   Source,
   DefinitionNode,
+  OperationTypeNode,
 } from 'graphql';
 
 // graphql-js < v15 backwards compatible ExecutionResult
@@ -312,6 +313,7 @@ export type NextResolverFn = () => Promise<any>;
 export interface Request {
   document: DocumentNode;
   variables: Record<string, any>;
+  operationType: OperationTypeNode;
   operationName?: string;
   extensions?: Record<string, any>;
 }

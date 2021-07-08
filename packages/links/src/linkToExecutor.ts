@@ -7,19 +7,18 @@ import { Executor, ExecutionParams, ExecutionResult, observableToAsyncIterable }
 export const linkToExecutor =
   (link: ApolloLink): Executor =>
   async <TReturn, TArgs, TContext>(params: ExecutionParams<TArgs, TContext>) => {
-    const { document, variables, extensions, context, info, operationName } = params;
+    const { document, variables, extensions, context, operationType, operationName } = params;
     const observable = execute(link, {
       query: document,
       variables,
       context: {
         graphqlContext: context,
-        graphqlResolveInfo: info,
         clientAwareness: {},
       },
       extensions,
       operationName,
     }) as Observable<ExecutionResult<TReturn>>;
-    if (info?.operation.operation === 'subscription') {
+    if (operationType === 'subscription') {
       return observableToAsyncIterable<ExecutionResult<TReturn>>(observable)[Symbol.asyncIterator]();
     }
     return toPromise(observable);
